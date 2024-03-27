@@ -16,7 +16,6 @@ env:
   TF_API_TOKEN: "${{ secrets.TF_API_TOKEN }}"
   TF_WORKSPACE: "${{ secrets.TF_WORKSPACE }}"
   CONFIG_DIRECTORY: "./" # Terraform config path to the root module on the repo
-  SOURCE_DIR: website
 
 jobs:
   terraform:

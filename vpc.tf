@@ -1,9 +1,28 @@
-resource "aws_vpc" "app_network" {
+resource "aws_vpc" "network" {
 
-  cidr_block           = "10.0.0.0/16"
+  cidr_block           = "15.0.0.0/20" # usable range: 15.0.0.1/20 - 15.0.15.254/20 (4,096 - 4)
   enable_dns_hostnames = true
-  enable_dns_support   = true
+  enable_dns_support   = true # DNS resolution
   tags = {
-    Name = "${resource.aws_vpc.app_network.Name} - ${local.environment}"
+    Name = "${resource.aws_vpc.network.Name} - ${local.environment}"
+  }
+}
+
+
+resource "aws_subnet" "public" {
+  vpc_id     = aws_vpc.network.id
+  cidr_block = "15.0.0.0/21" # usable range: 15.0.0.1/21 - 15.0.7.254/21 (2,048 - 2)
+
+  tags = {
+    Name = "${resource.aws_subnet.public.Name} - ${local.environment}"
+  }
+}
+
+resource "aws_subnet" "private" {
+  vpc_id     = aws_vpc.network.id
+  cidr_block = "15.0.8.0/21" # usable range: 15.0.8.1/21 - 15.0.15.254/21 (2,048 - 2)
+
+  tags = {
+    Name = "${resource.aws_subnet.public.Name} - ${local.environment}"
   }
 }
