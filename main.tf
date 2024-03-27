@@ -9,4 +9,6 @@ terraform {
 
 locals {
   environment = "Dev"
+  managedBy   = "Terraform"
+  project     = "AWS Wordpress Solution"
 }

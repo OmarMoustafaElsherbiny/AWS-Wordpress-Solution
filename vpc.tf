@@ -1,28 +1,35 @@
-resource "aws_vpc" "network" {
+resource "aws_vpc" "main" {
+  # The VPC CIDR block. Usable range: 15.0.0.1/20 - 15.0.15.254/20 (4,096 - 4)
+  cidr_block = "15.0.0.0/20"
 
-  cidr_block           = "15.0.0.0/20" # usable range: 15.0.0.1/20 - 15.0.15.254/20 (4,096 - 4)
+  # The instance tenancy (not guaranteed on the same rack)
+  instance_tenancy = "default"
+
+  # Enable DNS hostnames
   enable_dns_hostnames = true
-  enable_dns_support   = true # DNS resolution
+
+  # Enable DNS resolution support
+  enable_dns_support = true
+
+  # Map of tags to assign to the resource.
   tags = {
-    Name = "virtual network - ${local.environment}"
+    Name        = "virtual isolated network - ${local.project} - ${local.environment}"
+    ManagedBy   = "${local.managedBy}"
+    Project     = "${local.project}"
+    Environment = "${local.environment}"
   }
 }
 
 
-resource "aws_subnet" "public" {
-  vpc_id     = aws_vpc.network.id
-  cidr_block = "15.0.0.0/21" # usable range: 15.0.0.1/21 - 15.0.7.254/21 (2,048 - 2)
+resource "aws_internet_gateway" "main" {
+  # The VPC ID
+  vpc_id = aws_vpc.main.id
 
+  # Map of tags to assign to the resource.
   tags = {
-    Name = "public subnet - ${local.environment}"
-  }
-}
-
-resource "aws_subnet" "private" {
-  vpc_id     = aws_vpc.network.id
-  cidr_block = "15.0.8.0/21" # usable range: 15.0.8.1/21 - 15.0.15.254/21 (2,048 - 2)
-
-  tags = {
-    Name = "private subnet - ${local.environment}"
+    Name        = "internet gateway - ${local.project} - ${local.environment}"
+    ManagedBy   = "${local.managedBy}"
+    Project     = "${local.project}"
+    Environment = "${local.environment}"
   }
 }
