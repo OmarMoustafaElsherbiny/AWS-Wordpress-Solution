@@ -1,0 +1,9 @@
+output "bastion_hostname" {
+  value       = aws_instance.bastion_host.public_dns
+  description = "The public domain of the bastion host"
+}
+
+output "bastion_ipv4_address" {
+  value       = aws_instance.bastion_host.public_ip
+  description = "The public IP address of the bastion host"
+}
