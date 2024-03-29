@@ -62,9 +62,11 @@ jobs:
       - name: "Run playbook"
         uses: dawidd6/action-ansible-playbook@v2
         with:
-          playbook: deploy.yml
+          playbook: hello-world.yml
           directory: ./Ansible
           key: ${{secrets.EC2_SSH_PRIVATE_KEY}}
           inventory: |
             [ec2]
             ec2-bastion-host ansible_host=${{steps.tf-output.outputs.bastion_hostname}} ansible_user=ec2-user
+          options: |
+            --limit ec2
