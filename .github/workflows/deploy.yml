@@ -1,6 +1,6 @@
-name: "Terraform Apply"
+name: "Deploy"
 
-run-name: ${{ github.actor }} invoked Terraform Apply
+run-name: ${{ github.actor }} invoked Terraform & Ansible jobs
 
 on:
   push:
@@ -18,8 +18,8 @@ env:
   CONFIG_DIRECTORY: "./" # Terraform config path to the root module on the repo
 
 jobs:
-  terraform:
-    name: "Terraform Apply"
+  deploy:
+    name: "Deploy"
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -50,6 +50,7 @@ jobs:
           comment: "Apply Run from GitHub Actions CI ${{ github.sha }}"
 
       - name: Get Apply Output
+        id: tf-output
         uses: dnsbty/get-terraform-outputs-action@v1.1
         with:
           api-token: ${{ secrets.TF_API_TOKEN }}
@@ -57,3 +58,13 @@ jobs:
           outputs: |
             bastion_hostname
             bastion_ipv4_address
+
+      - name: "Run playbook"
+        uses: dawidd6/action-ansible-playbook@v2
+        with:
+          playbook: deploy.yml
+          directory: ./Ansible
+          key: ${{secrets.EC2_SSH_PRIVATE_KEY}}
+          inventory: |
+            [ec2]
+            ec2-bastion-host ansible_host=${{steps.tf-output.outputs.bastion_hostname}} ansible_user=ec2-user
