@@ -48,3 +48,12 @@ jobs:
         with:
           run: ${{ steps.apply-run.outputs.run_id }}
           comment: "Apply Run from GitHub Actions CI ${{ github.sha }}"
+
+      - name: Get Apply Output
+        uses: dnsbty/get-terraform-outputs-action@v1.1
+        with:
+          api-token: ${{ secrets.TF_API_TOKEN }}
+          workspace-id: ${{ secrets.TF_WORKSPACE_ID }}
+          outputs: |
+            bastion_hostname
+            bastion_ipv4_address
