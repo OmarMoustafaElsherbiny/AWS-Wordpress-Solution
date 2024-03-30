@@ -64,12 +64,15 @@ jobs:
         uses: dawidd6/action-ansible-playbook@v2
         with:
           # Test playbook
-          playbook: hello-world.yml
+          playbook: deploy-wordpress.yml
           directory: ./Ansible
+          # Supresses the first time SSH fingerprint prompt that returns unreachable error
           configuration: |
             [defaults]
             host_key_checking = False
+            deprecation_warnings = False
           key: ${{secrets.EC2_SSH_PRIVATE_KEY}}
+          requirements: requirements.yml
           inventory: |
             [ec2]
             ec2-bastion-host ansible_host=${{steps.tf-output.outputs.bastion_hostname}} ansible_user=ec2-user
