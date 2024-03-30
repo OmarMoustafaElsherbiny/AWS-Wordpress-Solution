@@ -1,5 +1,5 @@
 ---
-- name: Hello world file
+- name: Create Hello world file
   hosts: ec2
   tasks:
     - name: Create hello.txt file
