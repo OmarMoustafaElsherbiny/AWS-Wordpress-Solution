@@ -15,7 +15,8 @@ env:
   TF_CLOUD_ORGANIZATION: "${{ secrets.TF_CLOUD_ORGANIZATION }}"
   TF_API_TOKEN: "${{ secrets.TF_API_TOKEN }}"
   TF_WORKSPACE: "${{ secrets.TF_WORKSPACE }}"
-  CONFIG_DIRECTORY: "./" # Terraform config path to the root module on the repo
+  # Terraform config path to the root module on the repo
+  CONFIG_DIRECTORY: "./"
 
 jobs:
   deploy:
@@ -27,7 +28,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Upload Configuration
+      - name: Upload Terraform Configuration
         uses: hashicorp/tfc-workflows-github/actions/upload-configuration@v1.0.0
         id: apply-upload
         with:
@@ -41,7 +42,7 @@ jobs:
           workspace: ${{ env.TF_WORKSPACE }}
           configuration_version: ${{ steps.apply-upload.outputs.configuration_version_id }}
 
-      - name: Apply
+      - name: Terraform Apply
         uses: hashicorp/tfc-workflows-github/actions/apply-run@v1.0.0
         if: fromJSON(steps.apply-run.outputs.payload).data.attributes.actions.IsConfirmable
         id: apply
@@ -49,7 +50,7 @@ jobs:
           run: ${{ steps.apply-run.outputs.run_id }}
           comment: "Apply Run from GitHub Actions CI ${{ github.sha }}"
 
-      - name: Get Apply Output
+      - name: Get Terraform Output
         id: tf-output
         uses: dnsbty/get-terraform-outputs-action@v1.1
         with:
@@ -62,6 +63,7 @@ jobs:
       - name: "Run playbook"
         uses: dawidd6/action-ansible-playbook@v2
         with:
+          # Test playbook
           playbook: hello-world.yml
           directory: ./Ansible
           key: ${{secrets.EC2_SSH_PRIVATE_KEY}}

@@ -4,12 +4,10 @@
   tasks:
     - name: Create hello.txt file
       ansible.builtin.file:
-        # path: "{{ playbook_dir }}/hello.txt"
         path: "$PWD/hello.txt"
         state: touch
 
     - name: Write "Hello, world!" to hello.txt
       ansible.builtin.copy:
         content: "Hello, world!\n"
-        # dest: "{{ playbook_dir }}/hello.txt"
         dest: "$PWD/hello.txt"
