@@ -1,47 +1,58 @@
+# Ansible playbook AWS - install docker (2021)
 ---
-- name: Create Hello world file
+- name: "AWS - Install docker"
   hosts: ec2
   become: yes
   tasks:
-    - name: install prerequisites
-      apt:
-        name:
-        - apt-transport-https
-        - ca-certificates 
-        - curl 
-        - gnupg-agent
-        - software-properties-common
-        update_cache: yes
+    - name: Update all packages
+      yum:
+        name: "*"
+        state: latest
+        update_only: yes
 
-    - name: add apt-key
-      apt_key:
-      url: https://download.docker.com/linux/ubuntu/gpg
-  
-    - name: add docker repo
-      apt_repository:
-        repo: deb https://download.docker.com/linux/ubuntu focal stable
-    
-    - name: install docker 
-      apt:
-      name: 
-        - docker-ce
-        - docker-ce-cli
-        - containerd.io
-      update_cache: yes
-    
-    - name: add user permissions
-      shell: "usermod -aG docker ec2-user"
-    
-    - name: Reset ssh connection for changes to take effect
-      meta: "reset_connection"
-    
-    - name: install python package manager
-      apt:
-        name: python3-pip
-  
-    - name: install python sdk
-      become_user: ec2-user
-      pip:
-        name:
+    - name: Ensure a list of yum packages are installed
+      yum:
+        name: "{{ packages }}"
+        state: latest
+        update_cache: yes
+      vars:
+        packages:
+          - python-pip
+          - yum-utils
+          - device-mapper-persistent-data
+          - lvm2
+
+    - name: clean yum metadata cache
+      command: yum clean metadata
+      args:
+        warn: false
+
+    - name: Ensure a list of yum packages are installed
+      yum:
+        name: "{{ packages }}"
+        state: latest
+        update_cache: yes
+      vars:
+        packages:
+          - python3.8
+          - ansible
           - docker
+
+    - name: Enable Docker CE service at startup
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Upgrade pip3
+      shell: "python3.8 -m pip install pip --upgrade"
+
+    - name: Ensure Python pip packages are installed
+      pip:
+        name: "{{ packages }}"
+        executable: /usr/local/bin/pip3.8
+      vars:
+        packages:
+          - boto
+          - boto3
           - docker-compose
