@@ -1,3 +1,3 @@
 ---
-- import_playbook: install-docker.yml
-- import_playbook: install-wordpress.yml
+- import_playbook: install_docker.yml
+- import_playbook: install_wordpress.yml

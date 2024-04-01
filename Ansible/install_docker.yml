@@ -12,6 +12,7 @@
       loop:
         - git
         - docker
+        - python3-pip
 
     - name: Enable Docker service
       service:
@@ -36,3 +37,11 @@
       service:
         name: docker
         state: restarted
+
+    - name: Install Python SDK
+      become: yes
+      become_user: ec2-user
+      pip:
+        name:
+          - docker
+          - docker-compose
