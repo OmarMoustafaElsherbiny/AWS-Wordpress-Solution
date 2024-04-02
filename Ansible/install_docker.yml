@@ -38,6 +38,9 @@
         name: docker
         state: restarted
 
+    - name: add user permissions
+      shell: "usermod -aG docker {{ ansible_env.SUDO_USER }}"
+
     - name: Install Python SDK
       become: yes
       become_user: ec2-user
