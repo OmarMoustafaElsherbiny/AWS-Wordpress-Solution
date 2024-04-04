@@ -2,6 +2,16 @@
 - hosts: ec2
   become_user: ec2-user
   tasks:
+    # To prevent the "Error while fetching server API version" Error
+    - name: Check if docker is running
+      ansible.builtin.service:
+        name: docker
+        state: started
+
+    - name: Pause for 1 min
+      ansible.builtin.pause:
+        minutes: 2
+
     - name: Create Docker Network
       community.docker.docker_network:
         name: wordpress
