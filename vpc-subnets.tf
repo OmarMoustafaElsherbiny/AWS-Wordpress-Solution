@@ -30,7 +30,7 @@ resource "aws_subnet" "private" {
   cidr_block = "15.0.8.0/21"
 
   # The AZ for the subnet
-  availability_zone = "us-east-1a"
+  availability_zone = "us-east-1b"
 
   # Map of tags to assign to the resource.
   tags = {
