@@ -7,3 +7,8 @@ output "bastion_ipv4_address" {
   value       = aws_instance.bastion_host.public_ip
   description = "The public IP address of the bastion host"
 }
+
+output "rds_endpoint" {
+  value       = aws_db_instance.default.endpoint
+  description = "The RDS endpoint"
+}

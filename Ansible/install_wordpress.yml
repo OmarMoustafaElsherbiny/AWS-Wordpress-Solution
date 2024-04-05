@@ -10,7 +10,7 @@
 
     - name: Pause for 1 min
       ansible.builtin.pause:
-        minutes: 2
+        minutes: 1
 
     - name: Create Docker Network
       community.docker.docker_network:
