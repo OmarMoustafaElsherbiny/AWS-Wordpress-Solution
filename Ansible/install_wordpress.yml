@@ -27,23 +27,8 @@
         volumes:
           - wordpress:/var/www/html
         env:
-          WORDPRESS_DB_HOST: "db"
+          WORDPRESS_DB_HOST: "rds-endpoint"
           WORDPRESS_DB_USER: "exampleuser"
           WORDPRESS_DB_PASSWORD: "examplepass"
-          WORDPRESS_DB_NAME: "exampledb"
-        restart_policy: always
-
-    - name: Deploy MySQL
-      community.docker.docker_container:
-        name: db
-        image: mysql:5.7
-        networks:
-          - name: wordpress
-        volumes:
-          - db:/var/lib/mysql
-        env:
-          MYSQL_DATABASE: "exampledb"
-          MYSQL_USER: "exampleuser"
-          MYSQL_PASSWORD: "examplepass"
-          MYSQL_RANDOM_ROOT_PASSWORD: "1"
+          WORDPRESS_DB_NAME: "wordpressdb"
         restart_policy: always

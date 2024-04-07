@@ -10,8 +10,9 @@ resource "aws_db_subnet_group" "db_azs" {
 }
 
 resource "aws_db_instance" "default" {
-  db_name = "wordpressdb"
-  engine  = "mysql"
+  # Must be unique in the AWS region namespace
+  identifier = "wordpress-db"
+  engine     = "mysql"
 
   # Recommended version req for wordpress instead of the v5.7 in the ansible playbook
   engine_version = "8.0"
@@ -19,8 +20,7 @@ resource "aws_db_instance" "default" {
   # Deploy RDS in a single AZ to save costs
   multi_az = false
 
-  # Must be unique in the AWS region namespace
-  identifier             = "wordpress-db"
+  db_name                = "wordpressdb"
   username               = "exampleuser"
   password               = "examplepass"
   instance_class         = "db.t3.micro"
@@ -30,4 +30,6 @@ resource "aws_db_instance" "default" {
   # The AZ the instance will be provisioned in
   availability_zone   = "us-east-1a"
   skip_final_snapshot = true
+  # for testing
+  publicly_accessible = true
 }

@@ -59,6 +59,13 @@ jobs:
           outputs: |
             bastion_hostname
             bastion_ipv4_address
+            rds_endpoint
+
+      - name: Assign RDS endpoint to Wordpress DB host in Ansible install_wordpress.yml playbook
+        working-directory: ./Ansible
+        run: |
+          sed -i "s|WORDPRESS_DB_HOST:.*|WORDPRESS_DB_HOST: \"${{steps.tf-output.outputs.rds_endpoint}}\"|" install_wordpress.yml
+          cat install_wordpress.yml
 
       - name: "Run playbook"
         uses: dawidd6/action-ansible-playbook@v2
