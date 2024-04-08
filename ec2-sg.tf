@@ -42,6 +42,14 @@ resource "aws_security_group" "db_instance" {
     protocol = "tcp"
     security_groups = [aws_security_group.bastion_host.id]
   }
+  
+  # Allow MySQL access from anywhere
+  ingress {
+    from_port = 3306
+    to_port = 3306
+    protocol = "tcp"
+    cidr_blocks = [ "0.0.0.0/0" ]
+  }
 
   # Allow all outbound traffic with any protocol
   egress {
