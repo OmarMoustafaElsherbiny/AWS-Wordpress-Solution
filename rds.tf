@@ -30,6 +30,4 @@ resource "aws_db_instance" "default" {
   # The AZ the instance will be provisioned in
   availability_zone   = "us-east-1a"
   skip_final_snapshot = true
-  # for testing
-  publicly_accessible = true
 }
