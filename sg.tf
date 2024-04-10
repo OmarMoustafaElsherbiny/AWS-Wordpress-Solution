@@ -19,13 +19,6 @@ resource "aws_security_group" "bastion_host" {
     protocol    = "tcp"
     security_groups = [ aws_security_group.alb.id ]
   }
-  # Allow outbound health check traffic from the load balancer (Must be implemented in your server)
-  ingress {
-    from_port = 8080
-    to_port = 8080
-    protocol = "tcp"
-    security_groups = [ aws_security_group.alb.id ]
-  }
   # Allow all outbound traffic with any protocol
   # Since all protocols are allowed you dont need to add MySQL ports or HTTP rules for downloads
   egress {
@@ -58,14 +51,6 @@ resource "aws_security_group" "db_instance" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
-
-# Security group for EC2s that will host wp on private subnet
-# resource "aws_security_group" "ec2s" {
-#   # Security group name
-#   name = "ec2-sg"
-  
-# }
-
 resource "aws_security_group" "alb" {
   # Security group name
   name = "alb-sg"
@@ -80,11 +65,11 @@ resource "aws_security_group" "alb" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-  # Allow outbound traffic to check ec2 health endpoint
+  # Allow all outbound traffic to flow to bastion host temporarily for testing
   egress {
-    from_port   = 8080
-    to_port     = 8080
-    protocol    = "tcp"
-    security_groups = [ aws_security_group.bastion_host.id ]
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = [aws_security_group.bastion_host.id]
   }
 }
