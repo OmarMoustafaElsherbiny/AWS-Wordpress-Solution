@@ -35,3 +35,7 @@ terraform.rc
 
 # Don't include lock.hcl files generated from terraform init
 *lock.hcl
+
+
+# General MacOS system files
+.DS_STORE
