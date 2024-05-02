@@ -55,7 +55,6 @@ resource "aws_security_group" "db_instance" {
   }
 }
 resource "aws_security_group" "alb" {
-  depends_on = [ aws_secuirty_group.bastion_host ]
   # Security group name
   name = "alb-sg"
 

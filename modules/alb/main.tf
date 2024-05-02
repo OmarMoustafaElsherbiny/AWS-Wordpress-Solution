@@ -5,7 +5,7 @@ resource "aws_lb" "application" {
   # Application layer (TCP/IP - OSI) load balancer
   load_balancer_type = "application"
   security_groups    = [var.lb_sg_id]
-  subnets            = [var.subnet_az1_id]
+  subnets            = [var.subnet_az1_id, var.subnet_az2_id]
   enable_deletion_protection = false
 
   tags = {

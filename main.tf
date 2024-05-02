@@ -19,5 +19,8 @@ module "wp-alb" {
   vpc_id = aws_vpc.main.id
   lb_sg_id = aws_security_group.alb.id
   subnet_az1_id = aws_subnet.public.id
-  target_id = aws_instance.bastion_host.id
+  subnet_az2_id = aws_subnet.private.id
+  target_id = aws_instance.bastion_host.private_ip
+
+  depends_on = [ aws_instance.bastion_host ]
 }

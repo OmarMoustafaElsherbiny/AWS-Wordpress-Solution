@@ -15,6 +15,10 @@ variable "subnet_az1_id" {
   description = "Subnet AZ1 id"
 }
 
+variable "subnet_az2_id" {
+  description = "Subnet AZ2 id"
+}
+
 variable "target_id" {
   description = "Target instance id for target group to attach to"
 }
