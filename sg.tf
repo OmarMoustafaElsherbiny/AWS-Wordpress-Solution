@@ -32,6 +32,15 @@ resource "aws_security_group_rule" "http_bastion_traffic" {
   source_security_group_id = aws_security_group.alb.id
 }
 
+# resource "aws_security_group_rule" "http_bastion_direct_traffic" {
+#   type = "ingress"
+#   from_port = 80
+#   to_port = 80
+#   protocol = "tcp"
+#   security_group_id = aws_security_group.bastion_host.id
+#   cidr_blocks = [ "0.0.0.0/0" ]
+# }
+
 resource "aws_security_group" "db_instance" {
   # Security group name
   name = "db-sg"
