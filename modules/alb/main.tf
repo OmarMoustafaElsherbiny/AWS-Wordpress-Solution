@@ -1,28 +1,26 @@
-resource "aws_lb" "wordpress" {
-  name               = "Wordpresslb - ${local.environment}"
+resource "aws_lb" "application" {
+  name               = "${var.alb_name}"
   # Internet facing scheme 
   internal           = false
   # Application layer (TCP/IP - OSI) load balancer
   load_balancer_type = "application"
-  security_groups    = [aws_security_group.alb.id]
-  subnets            = [aws_subnet.public.id]
+  security_groups    = [var.lb_sg_id]
+  subnets            = [var.subnet_az1_id]
   enable_deletion_protection = false
 
   tags = {
-    Environment = "${local.environment}"
-    ManagedBy   = "${local.managedBy}"
-    Project     = "${local.project}"
-    VPC         = aws_vpc.main.id
+    ManagedBy   = "Terraform"
+    VPC         = "${var.vpc_id}"
   }
 }
 
 # TODO: Test RDS with Wordpress first before provisioning the ALB
-resource "aws_lb_target_group" "wordpress" {
-  name     = "wordpress-tg"
+resource "aws_lb_target_group" "main" {
+  name     = "${var.alb_name}-tg"
   target_type = "ip"
   port     = 80
   protocol = "HTTP"
-  vpc_id   = aws_vpc.main.id
+  vpc_id   = "${var.vpc_id}"
 
   health_check {
     enabled = true
@@ -39,22 +37,21 @@ resource "aws_lb_target_group" "wordpress" {
   }
 }
 
-
+# listener for http that forward traffic to web servers
 resource "aws_lb_listener" "http" {
-  load_balancer_arn = aws_lb.wordpress.arn
+  load_balancer_arn = aws_lb.application.arn
   port              = "80"
   protocol          = "HTTP"
 
   default_action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.wordpress.arn
+    target_group_arn = aws_lb_target_group.main.arn
   }
 }
 
-# The application load balancer
 
 resource "aws_lb_target_group_attachment" "web_servers" {
-  target_group_arn = aws_lb_target_group.wordpress.arn
-  target_id        = aws_instance.bastion_host.id
+  target_group_arn = aws_lb_target_group.main.arn
+  target_id        = "${var.target_id}"
   port             = 80
 }
