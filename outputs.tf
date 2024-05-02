@@ -12,3 +12,8 @@ output "rds_endpoint" {
   value       = aws_db_instance.default.endpoint
   description = "The RDS endpoint"
 }
+
+output "alb_dns_name" {
+  value       = module.wp-alb.alb_dns_name
+  description = "The DNS name of the ALB from ALB module"
+}
