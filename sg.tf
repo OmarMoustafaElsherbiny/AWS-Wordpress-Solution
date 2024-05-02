@@ -23,13 +23,25 @@ resource "aws_security_group" "bastion_host" {
 }
 
 # Allow inboound HTTP access from anywhere (for testing purposes)
-resource "aws_security_group_rule" "http_bastion_traffic" {
+resource "aws_security_group_rule" "http_bastion_alb_traffic" {
   type = "ingress"
   from_port = 80
   to_port = 80
   protocol = "tcp"
   security_group_id = aws_security_group.bastion_host.id
   source_security_group_id = aws_security_group.alb.id
+}
+
+# allows http traffic to the bastion http server without going to ALB
+# you can create a test http server using this command:
+# $ sudo python3 -m http.server 80
+resource "aws_security_group_rule" "http_bastion_traffic" {
+  type = "ingress"
+  from_port = 80
+  to_port = 80
+  protocol = "tcp"
+  security_group_id = aws_security_group.bastion_host.id
+  cidr_blocks = [ "0.0.0.0/0" ]
 }
 
 resource "aws_security_group" "db_instance" {
