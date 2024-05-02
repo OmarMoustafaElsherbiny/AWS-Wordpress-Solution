@@ -12,13 +12,6 @@ resource "aws_security_group" "bastion_host" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-  # Allow inboound HTTP access from anywhere (for testing purposes)
-  ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    security_groups = [ aws_security_group.alb.id ]
-  }
   # Allow all outbound traffic with any protocol
   # Since all protocols are allowed you dont need to add MySQL ports or HTTP rules for downloads
   egress {
@@ -27,6 +20,16 @@ resource "aws_security_group" "bastion_host" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
+}
+
+# Allow inboound HTTP access from anywhere (for testing purposes)
+resource "aws_security_group_rule" "http_bastion_traffic" {
+  type = "ingress"
+  from_port = 80
+  to_port = 80
+  protocol = "tcp"
+  security_group_id = aws_security_group.bastion_host.id
+  source_security_group_id = aws_security_group.alb.id
 }
 
 resource "aws_security_group" "db_instance" {
@@ -52,6 +55,7 @@ resource "aws_security_group" "db_instance" {
   }
 }
 resource "aws_security_group" "alb" {
+  depends_on = [ aws_secuirty_group.bastion_host ]
   # Security group name
   name = "alb-sg"
 
@@ -66,10 +70,19 @@ resource "aws_security_group" "alb" {
     cidr_blocks = ["0.0.0.0/0"]
   }
   # Allow all outbound traffic to flow to bastion host temporarily for testing
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = [aws_security_group.bastion_host.id]
-  }
+  # egress {
+  #   from_port   = 0
+  #   to_port     = 0
+  #   protocol    = "-1"
+  #   security_groups = [aws_security_group.bastion_host.id]
+  # }
+}
+
+resource "aws_security_group_rule" "egress_alb_traffic" {
+  type = "egress"
+  from_port = 0
+  to_port = 0
+  protocol = "-1"
+  security_group_id = aws_security_group.alb.id
+  source_security_group_id = aws_security_group.bastion_host.id
 }
