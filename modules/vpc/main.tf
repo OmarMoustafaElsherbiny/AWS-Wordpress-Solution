@@ -1,7 +1,16 @@
-resource "aws_vpc" "main" {
-  
+locals {
+  subnet = {
+    for i in var.azs : i => {
+      availability_zone    = i
+      cidr_block = cidrsubnet(var.cidr, 8, i)
+    }
+  }
 }
 
-resource "aws_subnet" "name" {
-  vpc_id = aws_vpc.main.id
+resource "aws_subnet" "public" {
+  for_each = local.subnet
+
+  vpc_id = ""
+  
+
 }
