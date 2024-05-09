@@ -67,8 +67,6 @@ variable "public_subnets" {
 }
 
 
-
-
 variable "create_multiple_public_route_tables" {
   description = "Indicates whether to create a separate route table for each public subnet. Default: `false`"
   type        = bool

@@ -17,6 +17,21 @@ resource "aws_vpc" "this" {
   )
 }
 
+################################################################################
+# Internet Gateway
+################################################################################
+
+resource "aws_internet_gateway" "this" {
+  count = var.create_igw ? 1 : 0
+
+  vpc_id = aws_vpc.this.id
+
+  tags = merge(
+    { "Name" = var.name },
+    var.tags,
+    var.igw_tags,
+  )
+}
 
 ################################################################################
 # Public Subnets
@@ -30,25 +45,29 @@ locals {
 }
 
 resource "aws_subnet" "public" {
-  for_each = { for i in range(length(var.public_subnets)) : i => {
-    # use modulo to never go out of list range in case the az is shorter than public subnets cidr (from cryptographic algorithms)
-    availability_zone = var.azs[i % length(var.azs)]
-    cidr_block        = var.public_subnets[i]
-  } }
+  for_each = public_subnets
 
-  availability_zone = each.value.availability_zone
+  # Availability zone the subnet should be created in.
+  availability_zone = each.value.az
 
-  cidr_block = each.value.cidr_block
+  # The CIDR block for the subnet.
+  cidr_block = each.value.cidr
 
+  # The VPC ID
   vpc_id = aws_vpc.this.id
 
   # Enable public IP address
   map_public_ip_on_launch = true
 
   # Map of tags to assign to the resource.
-  tags = {
-  }
+  tags = merge(
+    { "Name" = "${var.name}-${each.value.cidr}-${each.value.az}" },
+    var.public_subnet_tags,
+    var.tags
+  )
 }
+
+# Add route table, rt association
 
 
 resource "aws_subnet" "private" {
@@ -68,3 +87,5 @@ resource "aws_subnet" "private" {
   tags = {
   }
 }
+
+# Add nat gateway and give the option to create more than for each az and subnet (for redundancy by high price)
