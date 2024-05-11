@@ -85,8 +85,8 @@ variable "public_subnet_ipv6_native" {
   default     = false
 }
 
-variable "map_public_ip_on_launch" {
-  description = "Specify true to indicate that instances launched into the subnet should be assigned a public IP address. Default is `false`"
+variable "public_subnet_map_public_ip_on_launch" {
+  description = "Specify true to indicate that instances launched into the public subnet should be assigned a public IP address. Default is `false`"
   type        = bool
   default     = false
 }
