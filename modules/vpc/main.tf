@@ -102,16 +102,17 @@ resource "aws_route_table" "public" {
 
 
 resource "aws_route_table_association" "public" {
+  for_each = local.public_subnets
 
-  subnet_id      = values(aws_subnet.public)[*].id
-  route_table_id = values(aws_route_table.public)[*].id
+  subnet_id      = aws_subnet.public[each.key].id
+  route_table_id = aws_route_table.public[each.key].id
 }
 
 
 resource "aws_route" "public_internet_gateway" {
   for_each = local.public_subnets
 
-  route_table_id         = values(aws_route_table.public)[*].id
+  route_table_id         = aws_route_table.public[each.key].id
   destination_cidr_block = "0.0.0.0/0"
   gateway_id             = aws_internet_gateway.this[0].id
 
