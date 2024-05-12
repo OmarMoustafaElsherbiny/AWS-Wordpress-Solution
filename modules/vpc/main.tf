@@ -115,14 +115,8 @@ resource "aws_route" "public_internet_gateway" {
   route_table_id         = aws_route_table.public[each.key].id
   destination_cidr_block = "0.0.0.0/0"
   gateway_id             = aws_internet_gateway.this[0].id
-
-  timeouts {
-    create = "5m"
-  }
 }
 
-
-# Add route table, rt association
 
 ################################################################################
 # Private Subnets
@@ -141,21 +135,22 @@ resource "aws_subnet" "private" {
   for_each = local.private_subents 
 
   # Availability zone the subnet should be created in.
-  availability_zone = each.value.availability_zone
+  availability_zone = each.value.az
 
   # The CIDR block for the subnet.
-  cidr_block = each.value.cidr_block
+  cidr_block = each.value.cidr
 
   # The VPC ID the subnet belongs to.
-  vpc_id = aws_vpc.this.id
+  vpc_id = aws_vpc.this[0].id
 
   # Map/object/dict of tags to assign to the resource.
   tags = merge(
-    { "Name" = "${var.name}-${each.value.cidr_block}-${each.value.az}" },
+    { "Name" = "${var.name}-${each.value.cidr}-${each.value.az}" },
     var.private_subnet_tags,
     var.tags
   ) 
-  
+}
+
 }
 
 # Add nat gateway and give the option to create more than for each az and subnet (for redundancy by high price)
