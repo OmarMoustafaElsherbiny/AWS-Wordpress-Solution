@@ -36,11 +36,11 @@ resource "aws_internet_gateway" "this" {
   count = var.create_igw ? 1 : 0
 
   # ID of the VPC that the IGW will attach to.
-  vpc_id = aws_vpc.this.id
+  vpc_id = aws_vpc.this[0].id
 
   # Map/object/dict of tags to assign to the resource.
   tags = merge(
-    { "Name" = var.name },
+    { "Name" = "${var.name}-igw" },
     var.tags,
     var.igw_tags,
   )
@@ -69,7 +69,7 @@ resource "aws_subnet" "public" {
   cidr_block = each.value.cidr
 
   # The VPC ID the subnet belongs to.
-  vpc_id = aws_vpc.this.id
+  vpc_id = aws_vpc.this[0].id
 
   # Enable public IP address
   map_public_ip_on_launch = var.public_subnet_map_public_ip_on_launch 
@@ -86,12 +86,12 @@ resource "aws_subnet" "public" {
 resource "aws_route_table" "public" {
   for_each = local.public_subnets
 
-  vpc_id = aws_vpc.this.id
+  vpc_id = aws_vpc.this[0].id
 
   tags = merge(
     {
       "Name" = format(
-        "${var.name}-%s-%s",
+        "${var.name}-%s-%s-public-rt",
         each.value.az, each.value.cidr,
       ) 
     },
