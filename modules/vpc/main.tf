@@ -151,6 +151,27 @@ resource "aws_subnet" "private" {
   ) 
 }
 
+resource "aws_route_table" "private" {
+  for_each = local.private_subents
+
+  vpc_id = aws_vpc.this[0].id
+
+  tags = merge(
+    {
+      "Name" = format(
+        "${var.name}-%s-%s-private-rt",
+        each.value.az, each.value.cidr,
+      ) 
+    },
+    var.tags,
+    var.private_route_table_tags,
+  )
 }
 
+resource "aws_route_table_association" "private" {
+  for_each = local.private_subents
+
+  subnet_id      = aws_subnet.private[each.key].id
+  route_table_id = aws_route_table.private[each.key].id
+}
 # Add nat gateway and give the option to create more than for each az and subnet (for redundancy by high price)
