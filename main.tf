@@ -37,6 +37,9 @@ module "three_tier_vpc" {
                     "10.0.103.0/24", "10.0.104.0/24"]
 
   public_subnet_map_public_ip_on_launch = true
+
+  create_ec2_endpoint = true
+
   tags = {
     "Project" = local.project 
     "ManagedBy" = local.managedBy 

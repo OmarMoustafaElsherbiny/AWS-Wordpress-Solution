@@ -175,3 +175,23 @@ resource "aws_route_table_association" "private" {
   route_table_id = aws_route_table.private[each.key].id
 }
 # Add nat gateway and give the option to create more than for each az and subnet (for redundancy by high price)
+
+
+################################################################################
+# EC2 instance Conncect Endpoint
+################################################################################
+
+resource "aws_ec2_instance_connect_endpoint" "this" {
+  count = var.create_ec2_endpoint ? 1 : 0
+
+  # Place the endpoint in the first private subnet
+  subnet_id = aws_subnet.private[0].id
+  tags = merge(
+    { "Name" = format("${var.name}-ec2-instance-connect-endpoint-%s-%s", 
+    aws_subnet.private["0"].availability_zone, 
+    aws_subnet.private["0"].cidr_block) 
+    },
+    var.tags,
+    var.ec2_endpoint_tags
+  )
+}

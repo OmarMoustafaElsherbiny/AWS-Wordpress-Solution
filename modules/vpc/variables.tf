@@ -211,6 +211,23 @@ variable "private_route_table_tags" {
 }
 
 ################################################################################
+# EC2 instance Conncect Endpoint
+################################################################################
+
+variable "create_ec2_endpoint" {
+  description = "Controls if an EC2 instance connect endpoint should be created (use this instead of bastion host)"
+  type = bool
+  default = false
+}
+
+variable "ec2_endpoint_tags" {
+  description = "Additional tags for the EC2 instance connect endpoint"
+  type        = map(string)
+  default     = {}
+}
+
+
+################################################################################
 # Internet Gateway
 ################################################################################
 
