@@ -195,3 +195,50 @@ resource "aws_ec2_instance_connect_endpoint" "this" {
     var.ec2_endpoint_tags
   )
 }
+
+
+################################################################################
+# NAT Gateway and EIP 
+################################################################################
+resource "aws_eip" "nat_eip" {
+
+  # Create an EIP for each AZ
+  count = length(var.azs)
+
+  # EIP used in VPCs
+  domain = "vpc"
+
+  # Map of tags to assign to the resource.
+  tags = merge(
+    { "Name" = "${var.name}-Public NAT EIP-${count.index + 1}" },
+    var.nat_eip_tags,
+    var.tags
+  )
+}
+
+locals {
+  # For expression creates an object/map that contains public subnets that are in different AZs and EIPs 
+  # from the EIP resource array.
+  nat_public_subnets = { for i in range(length(var.azs)): 
+      i => { subnet_id = aws_subnet.public["${i}"].id, eip_id = aws_eip.nat_eip[i].id } if aws_subnet.public["${i}"].availability_zone == var.azs[i] } 
+}
+
+resource "aws_nat_gateway" "this" {
+  #TODO: Add the option to enable/disable the NAT gateway
+
+  # Create a NAT gateway for each AZ
+  for_each = local.nat_public_subnets
+
+  # EIP assigned to the NAT gateway
+  allocation_id = each.value.eip_id
+
+  # subnet the NAT gateway should be placed in
+  subnet_id     = each.value.subnet_id
+
+  # Map of tags to assign to the resource.
+  tags = merge(
+    { "Name" = "${var.name}-Public NAT-${each.key}" },
+    var.nat_gateway_tags,
+    var.tags
+  ) 
+}
