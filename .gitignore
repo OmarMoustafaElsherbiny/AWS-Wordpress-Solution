@@ -39,3 +39,6 @@ terraform.rc
 
 # General MacOS system files
 .DS_STORE
+
+# Ignore git worktrees
+.worktree/*
