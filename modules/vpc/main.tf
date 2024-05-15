@@ -224,10 +224,9 @@ locals {
 }
 
 resource "aws_nat_gateway" "this" {
-  #TODO: Add the option to enable/disable the NAT gateway
 
-  # Create a NAT gateway for each AZ
-  for_each = local.nat_public_subnets
+  # Create a NAT gateway for each AZ or not
+  for_each = var.create_public_nat_gateway ? local.nat_public_subnets : {}
 
   # EIP assigned to the NAT gateway
   allocation_id = each.value.eip_id
