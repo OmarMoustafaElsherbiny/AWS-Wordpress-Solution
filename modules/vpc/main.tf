@@ -60,7 +60,7 @@ locals {
 resource "aws_subnet" "public" {
 
   # Map that contains the cidr block and the az it belongs to, using cidr as it's key
-  for_each = local.public_subnets
+  for_each = length(var.public_subnets) > 0 ? local.public_subnets : {}
 
   # Availability zone the subnet should be created in.
   availability_zone = each.value.az
@@ -84,7 +84,7 @@ resource "aws_subnet" "public" {
 
 
 resource "aws_route_table" "public" {
-  for_each = local.public_subnets
+  for_each = length(var.public_subnets) > 0 ? local.public_subnets : {}
 
   vpc_id = aws_vpc.this[0].id
 
@@ -102,7 +102,7 @@ resource "aws_route_table" "public" {
 
 
 resource "aws_route_table_association" "public" {
-  for_each = local.public_subnets
+  for_each = length(var.public_subnets) > 0 ? local.public_subnets : {}
 
   subnet_id      = aws_subnet.public[each.key].id
   route_table_id = aws_route_table.public[each.key].id
@@ -110,7 +110,7 @@ resource "aws_route_table_association" "public" {
 
 
 resource "aws_route" "public_internet_gateway" {
-  for_each = local.public_subnets
+  for_each = length(var.public_subnets) > 0 ? local.public_subnets : {}
 
   route_table_id         = aws_route_table.public[each.key].id
   destination_cidr_block = "0.0.0.0/0"
@@ -203,7 +203,7 @@ resource "aws_ec2_instance_connect_endpoint" "this" {
 resource "aws_eip" "nat_eip" {
 
   # Create an EIP for each AZ
-  count = length(var.azs)
+  count = var.create_public_nat_gateway ? length(var.azs) : 0
 
   # EIP used in VPCs
   domain = "vpc"
@@ -219,8 +219,8 @@ resource "aws_eip" "nat_eip" {
 locals {
   # For expression creates an object/map that contains public subnets that are in different AZs and EIPs 
   # from the EIP resource array.
-  nat_public_subnets = { for i in range(length(var.azs)): 
-      i => { subnet_id = aws_subnet.public["${i}"].id, eip_id = aws_eip.nat_eip[i].id } if aws_subnet.public["${i}"].availability_zone == var.azs[i] } 
+  nat_public_subnets = var.create_public_nat_gateway ? { for i in range(length(var.azs)): 
+      i => { subnet_id = aws_subnet.public["${i}"].id, eip_id = aws_eip.nat_eip[i].id } if aws_subnet.public["${i}"].availability_zone == var.azs[i] } : {}
 }
 
 resource "aws_nat_gateway" "this" {
@@ -241,3 +241,4 @@ resource "aws_nat_gateway" "this" {
     var.tags
   ) 
 }
+#TODO: Add route to nat gateway for private subnets
