@@ -1,14 +1,14 @@
 locals {
-  ec2_subnets = {for i in range(length(var.var.ec2_subnets)) : i =>  {
+  ec2_subnets = {for i in range(length(var.ec2_subnets_ids)) : i =>  {
     az = var.ec2_azs[i],
-    subnet = var.var.ec2_subnets[i]
+    subnet_id = var.ec2_subnets_ids[i]
   }}
 }
 resource "aws_instance" "this" {
 
   for_each = local.ec2_subnets
 
-  subnet_id = each.key.subnet
+  subnet_id = each.value.subnet_id
 
   availability_zone = each.value.az
 
@@ -16,7 +16,7 @@ resource "aws_instance" "this" {
 
   instance_type = "t2.micro"
 
-  associate_public_ip_address = true
+  associate_public_ip_address = var.associate_public_ip_address
 
   key_name = "Bastion host key pair - AWS Wordpress Solution - Dev"
   tags = {

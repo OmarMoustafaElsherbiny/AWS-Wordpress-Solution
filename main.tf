@@ -46,3 +46,9 @@ module "three_tier_vpc" {
     "Environment" = local.environment 
   }
 }
+
+module "ec2s" {
+  source = "./modules/ec2"
+  ec2_azs = ["us-east-1a"]
+  ec2_subnets_ids = module.three_tier_vpc.private_subnets_id
+}
