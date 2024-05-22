@@ -132,7 +132,7 @@ locals {
 resource "aws_subnet" "private" {
 
   # Map that contains the cidr block and the az it belongs to, using cidr as it's key
-  for_each = local.private_subents 
+  for_each = length(var.private_subnets) > 0 ? local.private_subents : {}
 
   # Availability zone the subnet should be created in.
   availability_zone = each.value.az
@@ -152,7 +152,7 @@ resource "aws_subnet" "private" {
 }
 
 resource "aws_route_table" "private" {
-  for_each = local.private_subents
+  for_each = length(var.private_subnets) > 0 ? local.private_subents : {}
 
   vpc_id = aws_vpc.this[0].id
 
@@ -169,12 +169,34 @@ resource "aws_route_table" "private" {
 }
 
 resource "aws_route_table_association" "private" {
-  for_each = local.private_subents
+  for_each = length(var.private_subnets) > 0 ? local.private_subents : {}
 
   subnet_id      = aws_subnet.private[each.key].id
   route_table_id = aws_route_table.private[each.key].id
 }
 # Add nat gateway and give the option to create more than for each az and subnet (for redundancy by high price)
+
+
+locals {
+  # Map that contains AZ, cidr, nat gateway id and route table id for each private subnet
+  # Modulo is used to make sure the loop doesn't go out of bounds and distribute the nat gateways and azs evenly among the subnets
+  private_subnets = { for i in range(length(var.private_subnets)) : i => {
+    az = var.azs[i % length(var.azs)]
+    cidr = var.private_subnets[i]
+    nat_gateway_id = aws_nat_gateway.this[i % length(var.azs)].id
+    route_table_id = aws_route_table.private[i].id
+  }}
+}
+
+resource "aws_route" "nat_gateway" {
+
+  for_each = local.private_subnets
+
+  route_table_id = each.value.route_table_id
+  destination_cidr_block = "0.0.0.0/0"
+  nat_gateway_id = each.value.nat_gateway_id
+
+}
 
 
 ################################################################################
@@ -217,16 +239,16 @@ resource "aws_eip" "nat_eip" {
 }
 
 locals {
-  # For expression creates an object/map that contains public subnets that are in different AZs and EIPs 
-  # from the EIP resource array.
-  nat_public_subnets = var.create_public_nat_gateway ? { for i in range(length(var.azs)): 
-      i => { subnet_id = aws_subnet.public["${i}"].id, eip_id = aws_eip.nat_eip[i].id } if aws_subnet.public["${i}"].availability_zone == var.azs[i] } : {}
+  # Creates a map from a for expression to a map of subnet_id and eip_id and filtered by az
+  # public subnets and elastic ips are created before hand
+  availability_zone_public_subnet = { for i in range(length(var.azs)): 
+      i => { subnet_id = aws_subnet.public["${i}"].id, eip_id = aws_eip.nat_eip[i].id } if aws_subnet.public["${i}"].availability_zone == var.azs[i] }
 }
 
 resource "aws_nat_gateway" "this" {
 
   # Create a NAT gateway for each AZ or not
-  for_each = var.create_public_nat_gateway ? local.nat_public_subnets : {}
+  for_each = var.create_public_nat_gateway ? local.availability_zone_public_subnet : {}
 
   # EIP assigned to the NAT gateway
   allocation_id = each.value.eip_id
@@ -242,3 +264,11 @@ resource "aws_nat_gateway" "this" {
   ) 
 }
 #TODO: Add route to nat gateway for private subnets
+
+#TODO: Test VPC module provides the same outputs as the reference diagram
+
+#TODO: Test ec2 module provides the same outputs as the reference diagram (hard code values for now)
+
+#TODO: User enters the subnets for each module (ALB deployment, EC2s deployment, RDS deployment, EC2 connect endpoint deployment)
+
+# For each attribute in a resource use a for each expression to gather the attributes in a map object
