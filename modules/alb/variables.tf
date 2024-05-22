@@ -1,4 +1,4 @@
-variable "alb_name" {
+variable "name" {
   type        = string
   description = "Load balancer name"
 }
@@ -21,4 +21,16 @@ variable "subnet_az2_id" {
 
 variable "target_id" {
   description = "Target instance id for target group to attach to"
+}
+
+variable "tags" {
+  description = "values for tags"
+  type        = map(string)
+  default     = {}
+}
+
+variable "lb_tags" {
+  description = "Extra tags for load balancer"
+  type = map(string)
+  default = {}
 }

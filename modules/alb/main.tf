@@ -1,5 +1,5 @@
 resource "aws_lb" "application" {
-  name               = "${var.alb_name}"
+  name               = "${var.name}"
   # Internet facing scheme 
   internal           = false
   # Application layer (TCP/IP - OSI) load balancer
@@ -8,15 +8,18 @@ resource "aws_lb" "application" {
   subnets            = [var.subnet_az1_id, var.subnet_az2_id]
   enable_deletion_protection = false
 
-  tags = {
-    ManagedBy   = "Terraform"
-    VPC         = "${var.vpc_id}"
-  }
+  tags = merge(
+    {
+      Name = "${var.name}"
+    },
+    var.tags,
+    var.lb_tags
+  )
 }
 
 # TODO: Test RDS with Wordpress first before provisioning the ALB
 resource "aws_lb_target_group" "main" {
-  name     = "${var.alb_name}-tg"
+  name     = "${var.name}-tg"
   target_type = "ip"
   port     = 80
   protocol = "HTTP"
@@ -52,6 +55,7 @@ resource "aws_lb_listener" "http" {
 
 resource "aws_lb_target_group_attachment" "web_servers" {
   target_group_arn = aws_lb_target_group.main.arn
+  # Can the target group be more than 1 instance ?
   target_id        = "${var.target_id}"
   port             = 80
 }

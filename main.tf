@@ -17,12 +17,14 @@ locals {
 
 module "wp-alb" {
   source = "./modules/alb"
-  alb_name = "wordpress"
-  vpc_id = aws_vpc.main.id
+  name = "internet-facing-wp-alb"
+  vpc_id = module.three_tier_vpc.vpc_id
   lb_sg_id = aws_security_group.alb.id
-  subnet_az1_id = aws_subnet.public.id
-  subnet_az2_id = aws_subnet.private.id
+  subnet_az1_id = module.three_tier_vpc.public_subnets_id[0]
+  subnet_az2_id = module.three_tier_vpc.public_subnets_id[1] 
   target_id = aws_instance.bastion_host.private_ip
+
+  tags = local.tags
 
   depends_on = [ aws_instance.bastion_host ]
 }

@@ -4,6 +4,11 @@ output "private_subnets_id" {
   value = values(aws_subnet.private)[*].id
 }
 
+output "public_subnets_id" {
+  description = "The ID of the public subnets"
+  value = values(aws_subnet.public)[*].id
+}
+
 # used by other modules and resources
 output "vpc_id" {
   description = "The ID of the VPC"
