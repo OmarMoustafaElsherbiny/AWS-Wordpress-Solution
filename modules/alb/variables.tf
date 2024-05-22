@@ -1,7 +1,6 @@
-variable "name" {
-  type        = string
-  description = "Load balancer name"
-}
+################################################################################
+# Load Balancer Security Group & VPC 
+################################################################################
 
 variable "lb_sg_id" {
   description = "Load balancer security group id"
@@ -11,6 +10,20 @@ variable "vpc_id" {
   description = "VPC id"
 }
 
+################################################################################
+# The application load balancer targets 
+################################################################################
+
+variable "targets" {
+  description = "List of EC2 instance targets"
+  type = map(map)
+}
+
+################################################################################
+# Load Balancer Subnets
+################################################################################
+
+
 variable "subnet_az1_id" {
   description = "Subnet AZ1 id"
 }
@@ -19,12 +32,16 @@ variable "subnet_az2_id" {
   description = "Subnet AZ2 id"
 }
 
-variable "target_id" {
-  description = "Target instance id for target group to attach to"
+################################################################################
+# Tags & LB name
+################################################################################
+variable "name" {
+  type        = string
+  description = "Load balancer name"
 }
 
 variable "tags" {
-  description = "values for tags"
+  description = "Values for tags"
   type        = map(string)
   default     = {}
 }

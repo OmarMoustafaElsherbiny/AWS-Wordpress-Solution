@@ -22,11 +22,11 @@ module "wp-alb" {
   lb_sg_id = aws_security_group.alb.id
   subnet_az1_id = module.three_tier_vpc.public_subnets_id[0]
   subnet_az2_id = module.three_tier_vpc.public_subnets_id[1] 
-  target_id = aws_instance.bastion_host.private_ip
+  targets = module.wordpress_instances.ec2_targets
 
   tags = local.tags
 
-  depends_on = [ aws_instance.bastion_host ]
+  depends_on = [ module.three_tier_vpc, module.wordpress_instances ]
 }
 
 module "three_tier_vpc" {
