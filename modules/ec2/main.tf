@@ -12,17 +12,20 @@ resource "aws_instance" "this" {
 
   availability_zone = each.value.az
 
-  ami = "ami-0c101f26f147fa7fd"
+  ami = var.instance_ami 
 
-  instance_type = "t2.micro"
+  instance_type = var.instance_type 
 
   associate_public_ip_address = var.associate_public_ip_address
 
-  key_name = "Bastion host key pair - AWS Wordpress Solution - Dev"
-  tags = {
-    Name        = ""
-    ManagedBy   = ""
-    Project     = ""
-    Environment = ""
-  }
+  key_name = var.key_pair 
+
+  security_groups = var.security_groups
+
+  tags = merge(
+    { "Name" = format("${var.name}-%s-%s", each.value.az, each.value.subnet_id)
+    }, 
+    var.tags, 
+    var.ec2_tags
+  )
 }

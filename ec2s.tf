@@ -22,10 +22,5 @@ resource "aws_instance" "bastion_host" {
   key_name = "Bastion host key pair - AWS Wordpress Solution - Dev"
 
   # Map of tags to assign to the resource.
-  tags = {
-    Name        = "bastion host - ${local.project} - ${local.environment}"
-    ManagedBy   = "${local.managedBy}"
-    Project     = "${local.project}"
-    Environment = "${local.environment}"
-  }
+  tags = local.tags
 }

@@ -4,9 +4,10 @@ resource "aws_db_subnet_group" "db_azs" {
   # TODO: Test it in the public subnet and later in the private subnet
   subnet_ids = [aws_subnet.public.id, aws_subnet.private.id]
 
-  tags = {
-    Name = "Wordpress DB subnet group - ${local.project} - ${local.environment}"
-  }
+  # tags = {
+  #   Name = "Wordpress DB subnet group - ${local.project} - ${local.environment}"
+  # }
+  tags = local.tags
 }
 
 resource "aws_db_instance" "default" {
