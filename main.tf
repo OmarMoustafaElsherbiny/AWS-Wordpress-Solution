@@ -51,11 +51,11 @@ module "wordpress_instances" {
   source = "./modules/ec2"
 
   name = "wordpress"
-  
-  ec2_azs = ["us-east-1a", "us-east-1b"]
-  ec2_subnets_ids = module.three_tier_vpc.private_subnets_id
+
+  ec2_subnets = module.three_tier_vpc.ec2_subnets
   security_groups = [aws_security_group.bastion_host.id]
 
   key_pair = "Bastion host key pair - AWS Wordpress Solution - Dev"  
+  
   tags = local.tags
 }
