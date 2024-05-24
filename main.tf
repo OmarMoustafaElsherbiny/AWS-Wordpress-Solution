@@ -53,7 +53,7 @@ module "wordpress_instances" {
   name = "wordpress"
 
   ec2_subnets = module.three_tier_vpc.ec2_subnets
-  security_groups = [aws_security_group.bastion_host.id]
+  security_groups = [aws_security_group.wordpress_instances.id]
 
   key_pair = "Bastion host key pair - AWS Wordpress Solution - Dev"  
   

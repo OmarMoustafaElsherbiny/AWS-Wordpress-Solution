@@ -1,12 +1,7 @@
 resource "aws_db_subnet_group" "db_azs" {
   name = "wp-db-subnets"
-  # Subnets the DB can be provisioned in
-  # TODO: Test it in the public subnet and later in the private subnet
-  subnet_ids = [aws_subnet.public.id, aws_subnet.private.id]
-
-  # tags = {
-  #   Name = "Wordpress DB subnet group - ${local.project} - ${local.environment}"
-  # }
+  # Subnets the DB can be provisioned in for Multi-AZ deployments and replication
+  subnet_ids = [module.three_tier_vpc.private_subents["2"].id, module.three_tier_vpc.private_subents["3"].id]
   tags = local.tags
 }
 
