@@ -198,6 +198,10 @@ resource "aws_ec2_instance_connect_endpoint" "this" {
 ################################################################################
 # NAT Gateway and EIP 
 ################################################################################
+
+
+# TODO: aws_eip.nat_eip is empty tuple if create_public_nat_gateway is false, we want to to not create all the NAT resources and create the rest without throwing an erro
+
 resource "aws_eip" "nat_eip" {
 
   # Create an EIP for each AZ

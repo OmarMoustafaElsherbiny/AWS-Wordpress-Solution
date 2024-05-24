@@ -42,6 +42,8 @@ module "three_tier_vpc" {
 
   public_subnet_map_public_ip_on_launch = true
 
+  create_public_nat_gateway = true
+
   create_ec2_endpoint = true
 
   tags = local.tags
@@ -52,7 +54,7 @@ module "wordpress_instances" {
 
   name = "wordpress"
 
-  ec2_subnets = module.three_tier_vpc.ec2_subnets
+  ec2_subnets = module.three_tier_vpc.ec2_private_subnets
   security_groups = [aws_security_group.wordpress_instances.id]
 
   key_pair = "Bastion host key pair - AWS Wordpress Solution - Dev"  

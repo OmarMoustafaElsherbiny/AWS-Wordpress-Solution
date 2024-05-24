@@ -19,16 +19,16 @@ output "alb_dns_name" {
 ################################################################################
 
 output "ec2s_insatance_ids" {
-  value = module.ec2s.ec2_instance_id 
+  value = module.wordpress_instances.instance_ids
   description = "List of EC2 instance IDs for Ansible to use with SSH & AWS CLI to connect to the instances"
 }
 
 output "ec2_instance_id_1" {
-  value = module.ec2s.instance_ids[0] 
+  value = module.wordpress_instances.instance_ids[0] 
   description = "Instance ID of the first EC2 instance used in Ansible SSH proxy command to connect to the instance"
 }
 
 output "ec2_instance_id_2" {
-  value = module.ec2s.instance_ids[1] 
+  value = module.wordpress_instances.instance_ids[1] 
   description = "Instance ID of the second EC2 instance used in Ansible SSH   proxy command to connect to the instance"
 }

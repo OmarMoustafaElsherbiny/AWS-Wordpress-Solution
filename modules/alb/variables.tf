@@ -16,7 +16,6 @@ variable "vpc_id" {
 
 variable "targets" {
   description = "List of EC2 instance targets"
-  type = map(map)
 }
 
 ################################################################################

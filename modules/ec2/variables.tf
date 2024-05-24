@@ -4,7 +4,6 @@
 
 variable "ec2_subnets" {
   description = "List of subnets the ec2 will be deployed in"
-  type = map()
 }
 
 # Gives public ip address to the instance (use in public subnet)

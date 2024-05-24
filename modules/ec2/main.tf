@@ -26,7 +26,7 @@ resource "aws_instance" "this" {
 
   # Tags to be applied to the EC2 instance
   tags = merge(
-    { "Name" = format("${var.name}-%s-%s", each.value.az, each.value.subnet_id)
+    { "Name" = format("${var.name}-%s-%s", each.value.availability_zone, each.value.id)
     }, 
     var.tags, 
     var.ec2_tags
