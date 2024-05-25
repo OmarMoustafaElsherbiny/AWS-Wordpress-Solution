@@ -17,6 +17,7 @@ env:
   TF_WORKSPACE: "${{ secrets.TF_WORKSPACE }}"
   # Terraform config path to the root module on the repo
   CONFIG_DIRECTORY: "./"
+  AWS_REGION: "us-east-1"
 
 jobs:
   deploy:
@@ -25,6 +26,12 @@ jobs:
     permissions:
       contents: read
     steps:
+      - name: "Install AWS CLI"
+        uses: unfor19/install-aws-cli-action@v1
+
+      - name: "Configure AWS CLI"
+        run: aws configure set default.region "${{ env.AWS_REGION }}" && aws configure set aws_access_key_id "${{ secrets.AWS_ACCESS_KEY_ID }}" && aws configure set aws_secret_access_key "${{ secrets.AWS_SECRET_ACCESS_KEY }}"
+
       - name: Checkout
         uses: actions/checkout@v3
 
