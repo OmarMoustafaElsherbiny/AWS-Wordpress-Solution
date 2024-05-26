@@ -4,7 +4,7 @@ run-name: ${{ github.actor }} invoked Terraform & Ansible jobs
 
 on:
   push:
-    branches: [main]
+    # branches: [main]
     paths-ignore:
       - "**/README.md"
       - "**/LICENSE"
@@ -27,66 +27,6 @@ jobs:
     steps:
       - name: "Install AWS CLI"
         uses: unfor19/install-aws-cli-action@v1
-        run: 
 
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Upload Terraform Configuration
-        uses: hashicorp/tfc-workflows-github/actions/upload-configuration@v1.0.0
-        id: apply-upload
-        with:
-          directory: ${{ env.CONFIG_DIRECTORY }}
-          workspace: ${{ env.TF_WORKSPACE }}
-
-      - name: Create Apply Run
-        uses: hashicorp/tfc-workflows-github/actions/create-run@v1.0.0
-        id: apply-run
-        with:
-          workspace: ${{ env.TF_WORKSPACE }}
-          configuration_version: ${{ steps.apply-upload.outputs.configuration_version_id }}
-
-      - name: Terraform Apply
-        uses: hashicorp/tfc-workflows-github/actions/apply-run@v1.0.0
-        if: fromJSON(steps.apply-run.outputs.payload).data.attributes.actions.IsConfirmable
-        id: apply
-        with:
-          run: ${{ steps.apply-run.outputs.run_id }}
-          comment: "Apply Run from GitHub Actions CI ${{ github.sha }}"
-
-      - name: Get Terraform Output
-        id: tf-output
-        uses: dnsbty/get-terraform-outputs-action@v1.1
-        with:
-          api-token: ${{ secrets.TF_API_TOKEN }}
-          workspace-id: ${{ secrets.TF_WORKSPACE_ID }}
-          outputs: |
-            bastion_hostname
-            bastion_ipv4_address
-            rds_endpoint
-
-      - name: Assign RDS endpoint to Wordpress DB host in Ansible install_wordpress.yml playbook
-        working-directory: ./Ansible
-        run: |
-          sed -i "s|WORDPRESS_DB_HOST:.*|WORDPRESS_DB_HOST: \"${{steps.tf-output.outputs.rds_endpoint}}\"|" install_wordpress.yml
-          cat install_wordpress.yml
-
-      - name: "Run playbook"
-        uses: dawidd6/action-ansible-playbook@v2
-        with:
-          # Test playbook
-          playbook: main.yml
-          directory: ./Ansible
-          # Supresses the first time SSH fingerprint prompt that returns unreachable error
-          configuration: |
-            [defaults]
-            host_key_checking = False
-            deprecation_warnings = False
-          key: ${{secrets.EC2_SSH_PRIVATE_KEY}}
-          requirements: requirements.yml
-          inventory: |
-            [ec2]
-            ec2-bastion-host ansible_host=${{steps.tf-output.outputs.bastion_hostname}} ansible_user=ec2-user
-          options: |
-            --limit ec2
-            --verbose
+      - name: "Run AWS CLI version"
+        run: aws --version
