@@ -5,11 +5,11 @@ run-name: ${{ github.actor }} invoked Terraform & Ansible jobs
 on:
   push:
     branches: [test-ci]
-    paths-ignore:
-      - "**/README.md"
-      - "**/LICENSE"
-      - ".github/workflows/**"
-      - "Diagram/**"
+    # paths-ignore:
+    #   - "**/README.md"
+    #   - "**/LICENSE"
+    #   - ".github/workflows/**"
+    #   - "Diagram/**"
 
 env:
   TF_CLOUD_ORGANIZATION: "${{ secrets.TF_CLOUD_ORGANIZATION }}"
