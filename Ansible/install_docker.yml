@@ -1,12 +1,12 @@
 # Ansible playbook AWS - install docker (2021)
 ---
 - name: Install and config Docker in Amazon Linux 2023
-  hosts: ec2
-  become: yes
+  hosts: all
+  become: true
 
   tasks:
     - name: Install dependencies
-      yum:
+      ansible.builtin.yum:
         name: "{{ item }}"
         state: present
       loop:
@@ -15,13 +15,13 @@
         - python3-pip
 
     - name: Enable Docker service
-      service:
+      ansible.builtin.service:
         name: docker
         state: started
-        enabled: yes
+        enabled: true
 
     - name: Install docker-compose
-      get_url:
+      ansible.builtin.get_url:
         url: https://github.com/docker/compose/releases/download/v2.11.2/docker-compose-Linux-x86_64
         dest: /usr/local/bin/docker-compose
         mode: "u+x,g+x"
@@ -34,17 +34,17 @@
         - docker
 
     - name: Restart Docker
-      service:
+      ansible.builtin.service:
         name: docker
         state: restarted
 
-    - name: add user permissions
-      shell: "usermod -aG docker {{ ansible_env.SUDO_USER }}"
+    - name: Add user permissions
+      ansible.builtin.shell: "usermod -aG docker {{ ansible_env.SUDO_USER }}"
 
     - name: Install Python SDK
-      become: yes
+      become: true
       become_user: ec2-user
-      pip:
+      ansible.builtin.pip:
         name:
           - docker
           - docker-compose

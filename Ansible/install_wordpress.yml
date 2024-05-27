@@ -1,5 +1,5 @@
 ---
-- hosts: ec2
+- hosts: all 
   become_user: ec2-user
   tasks:
     # To prevent the "Error while fetching server API version" Error
