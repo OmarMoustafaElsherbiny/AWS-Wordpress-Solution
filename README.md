@@ -24,3 +24,6 @@
 #### EC2
 - 2 EC2s instances with amazon linux image
 
+#### Auto Scaling Group
+- 1 autoscaling group with 2 EC2s instances
+
