@@ -1,4 +1,7 @@
 ---
-- name: Install Apache 
-  yum: name=httpd update_cache=yes state=present
+- name: Install Apache
+  ansible.builtin.yum:
+    name: httpd
+    update_cache: true
+    state: present
   notify: Start Apache
