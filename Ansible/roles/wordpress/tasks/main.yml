@@ -1,0 +1,33 @@
+---
+- name: Download WordPress
+  ansible.builtin.get_url:
+    url: https://wordpress.org/latest.tar.gz
+    dest: /tmp/latest.tar.gz
+    mode: "0644"
+
+- name: Extract WordPress
+  ansible.builtin.unarchive:
+    src: /tmp/latest.tar.gz
+    dest: /var/www/html
+    remote_src: true
+    owner: ec2-user
+    group: apache
+    mode: "0640"
+
+- name: Copy WordPress contents
+  ansible.builtin.copy:
+    src: /var/www/html/wordpress/
+    dest: /var/www/html/
+    remote_src: true
+    mode: "0640"
+
+# - name: Rename wp-config-sample.php to wp-config.php
+#   ansible.builtin.command: mv /var/www/html/wp-config-sample.php /var/www/html/wp-config.php
+#   args:
+#     creates: "/var/www/html/wp-config.php"
+
+- name: Copy wordpress config
+  ansible.builtin.template:
+    src: wp-config-sample.php.j2
+    dest: /var/www/html/wordpress/wp-config.php
+    mode: "0640"

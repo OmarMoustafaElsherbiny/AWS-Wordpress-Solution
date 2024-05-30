@@ -1,0 +1,4 @@
+- name: Install dependencies
+  ansible.builtin.yum:
+    name: php8.2
+    state: present

@@ -2,6 +2,10 @@
 - name: Install WordPress, Apache, and PHP
   hosts: all
   remote_user: ec2-user
+  gather_facts: false
 
   roles:
     - apache
+    - wordpress
+
+#TODO: Amend any changes to wordpress role to the latest commit
