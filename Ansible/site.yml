@@ -1,0 +1,7 @@
+---
+- name: Install WordPress, Apache, and PHP
+  hosts: all
+  remote_user: ec2-user
+
+  roles:
+    - apache

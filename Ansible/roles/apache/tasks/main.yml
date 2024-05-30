@@ -1,0 +1,4 @@
+---
+- name: Install Apache 
+  yum: name=httpd update_cache=yes state=present
+  notify: Start Apache
