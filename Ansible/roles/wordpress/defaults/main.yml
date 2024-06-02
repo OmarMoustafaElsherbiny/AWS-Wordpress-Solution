@@ -1,5 +1,5 @@
 ---
-wordpress_database_name: wordpress-db
+wordpress_db_name: wordpress-db
 wordpress_master_db_user: wordpressdb
 wordpress_master_db_password: examplepass
 wordpress_db_host: rds-endpoint

@@ -69,10 +69,10 @@ jobs:
             rds_endpoint
 
       - name: Assign RDS endpoint to Wordpress DB host in Ansible install_wordpress.yml playbook
-        working-directory: ./Ansible
+        working-directory: ./Ansible/roles/wordpress/defaults
         run: |
-          sed -i "s|WORDPRESS_DB_HOST:.*|WORDPRESS_DB_HOST: \"${{steps.tf-output.outputs.rds_endpoint}}\"|" install_wordpress.yml
-          cat install_wordpress.yml
+          sed -i "s|wordpress_db_host:.*|wordpress_db_host: \"${{steps.tf-output.outputs.rds_endpoint}}\"|" main.yml 
+          cat main.yml
 
       - name: "Run playbook"
         uses: dawidd6/action-ansible-playbook@v2
